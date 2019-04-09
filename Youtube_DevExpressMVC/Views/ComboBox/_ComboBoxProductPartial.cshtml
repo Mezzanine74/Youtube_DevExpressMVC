@@ -1,0 +1,21 @@
+@Html.DevExpress().ComboBox(settings => {
+    settings.Name = "ComboBoxProduct";
+    settings.Properties.DropDownStyle = DropDownStyle.DropDown;
+    settings.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
+    settings.Properties.ClearButton.DisplayMode = ClearButtonDisplayMode.OnHover;
+
+    settings.CallbackRouteValues = new { Controller = "ComboBox", Action = "ComboBoxProductPartial" };
+    settings.Properties.CallbackPageSize = 20;
+    settings.Properties.ValueField = "Id";
+    settings.Properties.TextField = "ProductName";
+
+    settings.Width = 250;
+    settings.Properties.DropDownHeight = Unit.Pixel(300);
+
+    settings.Properties.Columns.Add("ProductName", "Product Name", 200);
+    settings.Properties.Columns.Add("QuantityPerUnit", "Quantity Per Unit", 100);
+    settings.Properties.Columns.Add("UnitPrice", "Unit Price", 100);
+
+    settings.Properties.ClientSideEvents.GotFocus = "function(s,e){s.ShowDropDown();}";
+
+    }).BindList(Model).GetHtml()

@@ -1,0 +1,79 @@
+@{
+	var grid = Html.DevExpress().GridView(settings => {
+        settings.Name = "GridViewDemo";
+        settings.CallbackRouteValues = new { Controller = "GridView", Action = "GridViewDemoPartial" };
+
+		settings.SettingsEditing.AddNewRowRouteValues = new { Controller = "GridView", Action = "GridViewDemoPartialAddNew" };
+        settings.SettingsEditing.UpdateRowRouteValues = new { Controller = "GridView", Action = "GridViewDemoPartialUpdate" };
+        settings.SettingsEditing.DeleteRowRouteValues = new { Controller = "GridView", Action = "GridViewDemoPartialDelete" };
+        settings.SettingsEditing.Mode = GridViewEditingMode.EditFormAndDisplayRow;
+        settings.SettingsBehavior.ConfirmDelete = true;
+
+		settings.CommandColumn.Visible = true;
+        settings.CommandColumn.ShowNewButton = false;
+        settings.CommandColumn.ShowNewButtonInHeader = true;
+        settings.CommandColumn.ShowDeleteButton = true;
+        settings.CommandColumn.ShowEditButton = true;
+
+		settings.KeyFieldName = "Id";
+
+		settings.SettingsPager.Visible = true;
+		settings.Settings.ShowGroupPanel = false;
+		settings.Settings.ShowFilterRow = false;
+        settings.Settings.ShowHeaderFilterButton = true;
+		settings.SettingsBehavior.AllowSelectByRowClick = true;
+
+		settings.SettingsAdaptivity.AdaptivityMode = GridViewAdaptivityMode.Off;
+		settings.SettingsAdaptivity.AdaptiveColumnPosition = GridViewAdaptiveColumnPosition.Right;
+		settings.SettingsAdaptivity.AdaptiveDetailColumnCount = 1;
+		settings.SettingsAdaptivity.AllowOnlyOneAdaptiveDetailExpanded = false;
+		settings.SettingsAdaptivity.HideDataCellsAtWindowInnerWidth = 0;
+
+				settings.Columns.Add("CategoryName");
+				settings.Columns.Add("Description");
+				settings.Columns.Add("Picture");
+
+	            settings.Columns.Add(col =>
+	            {
+
+                    col.SetEditItemTemplateContent(editContent =>
+                    {
+                        @Html.DevExpress().RadioButtonList(radioSettings =>
+                        {
+                            radioSettings.Name = "RadioEdit" + editContent.KeyValue.ToString();
+
+                            var productListesi = (List<YoutubeDevExpressMVC.Web.Models.Db.Product>) ViewBag.ProductListesi;
+                            var ilgiliProducts = productListesi.Where(c => c.CategoryId == (int)editContent.KeyValue).Select(c=>c.ProductName);
+
+                            radioSettings.Properties.Items.AddRange(ilgiliProducts.ToList());
+
+                        }).GetHtml();
+                    });
+
+                    col.SetHeaderTemplateContent(headerContent =>
+                    {
+                        ViewContext.Writer.Write("Products");
+
+                    });
+
+	                col.SetDataItemTemplateContent(itemContent =>
+	                {
+	                    @Html.DevExpress().RadioButtonList(radioSettings =>
+	                    {
+	                        radioSettings.Name = "Radio" + itemContent.KeyValue.ToString();
+
+	                        var productListesi = (List<YoutubeDevExpressMVC.Web.Models.Db.Product>) ViewBag.ProductListesi;
+	                        var ilgiliProducts = productListesi.Where(c => c.CategoryId == (int)itemContent.KeyValue).Select(c=>c.ProductName);
+
+                            radioSettings.Properties.Items.AddRange(ilgiliProducts.ToList());
+
+	                    }).GetHtml();
+	                });
+	            });
+
+	});
+		if (ViewData["EditError"] != null){
+        grid.SetEditErrorText((string)ViewData["EditError"]);
+    }
+}
+@grid.Bind(Model).GetHtml()
