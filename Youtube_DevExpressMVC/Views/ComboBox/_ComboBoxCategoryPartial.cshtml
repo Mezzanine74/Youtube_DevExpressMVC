@@ -16,6 +16,6 @@
 
     settings.Properties.ClientSideEvents.GotFocus = "function(s,e){s.ShowDropDown();}";
     settings.Properties.ClientSideEvents.ValueChanged = "function(s,e){comboBoxCategoryValueChanged(s,e);}";
-    
+    settings.Properties.ClientSideEvents.Init = "function(s,e){comboBoxCategoryInit(s,e)}";
 
     }).BindList(Model).GetHtml()

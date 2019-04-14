@@ -1,15 +1,6 @@
 ﻿@model YoutubeDevExpressMVC.Web.Models.Db.Product
 
-@{
-    ViewBag.Title = "Index";
-}
-
-<h2>FormLayout</h2>
-
-@using (Html.BeginForm("Product", "FormLayout", FormMethod.Post))
-{
-
-    @Html.DevExpress().FormLayout(settings => {
+@Html.DevExpress().FormLayout(settings => {
     settings.Name = "FormLayoutProduct";
 
     settings.Items.Add(m => m.Id, item =>
@@ -157,7 +148,8 @@
                 {
                     btn.Name = "btnUpdate";
                     btn.Text = "Update";
-                    btn.UseSubmitBehavior = true;
+                    //btn.UseSubmitBehavior = true;
+                    btn.ClientSideEvents.Click = "function(s,e){updateGridProduct(GridViewProducts);}";
                 }).GetHtml());
 
                 ViewContext.Writer.Write("<span> <span>");
@@ -166,6 +158,7 @@
                 {
                     btn.Name = "btnCancel";
                     btn.Text = "Cancel";
+                    btn.ClientSideEvents.Click = "function(s,e){cancelGridProduct(GridViewProducts);}";
                 }).GetHtml());
 
             });
@@ -175,30 +168,4 @@
 
 }).GetHtml()
 
-}
 
-<script type="text/javascript">
-    // Hidden kontrollerin validationi icin gerekli
-    // $(function(){}) icine koyulmamasi gerek !
-    $.validator.setDefaults({
-        ignore: ""
-    });
-
-    var comboBoxSupplierValueChanged;
-    var comboBoxCategoryValueChanged;
-    var comboBoxSupplierInit = function (s, e) {};
-
-    var comboBoxCategoryInit = function (s, e) {};
-
-    $(function () {
-        comboBoxSupplierValueChanged = function (s, e) {
-            $('#SupplierId').val(s.GetValue());
-        };
-
-        comboBoxCategoryValueChanged = function (s, e) {
-            $('#CategoryId').val(s.GetValue());
-        }
-
-    })
-
-</script>

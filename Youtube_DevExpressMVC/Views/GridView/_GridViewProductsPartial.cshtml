@@ -1,0 +1,45 @@
+@using YoutubeDevExpressMVC.Web.Models.Db
+
+@{
+    var grid = Html.DevExpress().GridView(settings =>
+    {
+        settings.Name = "GridViewProducts";
+        settings.CallbackRouteValues = new
+        {
+            Controller = "GridView",
+            Action = "GridViewProductsPartial" };
+
+		settings.SettingsEditing.AddNewRowRouteValues = new { Controller = "GridView", Action = "GridViewProductsPartialAddNew" };
+		settings.SettingsEditing.UpdateRowRouteValues = new { Controller = "GridView", Action = "GridViewProductsPartialUpdate" };
+		settings.SettingsEditing.DeleteRowRouteValues = new { Controller = "GridView", Action = "GridViewProductsPartialDelete" };
+
+		YoutubeDevExpressMVC.Web.Helpers.GridViewCommonSettings.SetSettings(settings);
+
+				settings.Columns.Add("Id");
+				settings.Columns.Add("ProductName");
+				settings.Columns.Add("SupplierId");
+				settings.Columns.Add("CategoryId");
+				settings.Columns.Add("QuantityPerUnit");
+				settings.Columns.Add("UnitPrice");
+				settings.Columns.Add("UnitsInStock");
+				settings.Columns.Add("UnitsOnOrder");
+				settings.Columns.Add("ReorderLevel");
+				settings.Columns.Add("Discontinued");
+
+
+        settings.SetEditFormTemplateContent(editFormTemplate =>
+        {
+            var grd = editFormTemplate.Grid;
+
+            Product product = grd.IsNewRowEditing ? new Product() : (Product)grd.GetRow(grd.EditingRowVisibleIndex);
+
+            Html.RenderPartial("_CustomEditProduct", product);
+        });
+
+
+			});
+		if (ViewData["EditError"] != null){
+		grid.SetEditErrorText((string)ViewData["EditError"]);
+	}
+}
+@grid.Bind(Model).GetHtml()
