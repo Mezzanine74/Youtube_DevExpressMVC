@@ -168,5 +168,82 @@ namespace YoutubeDevExpressMVC.Web.Controllers
             }
             return PartialView("_GridViewProductsPartial", model.ToList());
         }
+
+        public ActionResult TumKolonlar()
+        {
+            return View();
+        }
+
+        [ValidateInput(false)]
+        public ActionResult GridViewTumKolonlarPartial()
+        {
+            var model = db.Products;
+            return PartialView("_GridViewTumKolonlarPartial", model.ToList());
+        }
+
+        [HttpPost, ValidateInput(false)]
+        public ActionResult GridViewTumKolonlarPartialAddNew(YoutubeDevExpressMVC.Web.Models.Db.Product item)
+        {
+            var model = db.Products;
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    model.Add(item);
+                    db.SaveChanges();
+                }
+                catch (Exception e)
+                {
+                    ViewData["EditError"] = e.Message;
+                }
+            }
+            else
+                ViewData["EditError"] = "Please, correct all errors.";
+            return PartialView("_GridViewTumKolonlarPartial", model.ToList());
+        }
+        [HttpPost, ValidateInput(false)]
+        public ActionResult GridViewTumKolonlarPartialUpdate(YoutubeDevExpressMVC.Web.Models.Db.Product item)
+        {
+            var model = db.Products;
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var modelItem = model.FirstOrDefault(it => it.Id == item.Id);
+                    if (modelItem != null)
+                    {
+                        this.UpdateModel(modelItem);
+                        db.SaveChanges();
+                    }
+                }
+                catch (Exception e)
+                {
+                    ViewData["EditError"] = e.Message;
+                }
+            }
+            else
+                ViewData["EditError"] = "Please, correct all errors.";
+            return PartialView("_GridViewTumKolonlarPartial", model.ToList());
+        }
+        [HttpPost, ValidateInput(false)]
+        public ActionResult GridViewTumKolonlarPartialDelete(System.Int32 Id)
+        {
+            var model = db.Products;
+            if (Id >= 0)
+            {
+                try
+                {
+                    var item = model.FirstOrDefault(it => it.Id == Id);
+                    if (item != null)
+                        model.Remove(item);
+                    db.SaveChanges();
+                }
+                catch (Exception e)
+                {
+                    ViewData["EditError"] = e.Message;
+                }
+            }
+            return PartialView("_GridViewTumKolonlarPartial", model.ToList());
+        }
     }
 }
