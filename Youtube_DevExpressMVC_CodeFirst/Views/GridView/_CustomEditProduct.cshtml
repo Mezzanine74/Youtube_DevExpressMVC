@@ -1,0 +1,171 @@
+﻿@model YoutubeDevExpressMVC.Web.Models.Db.Product
+
+@Html.DevExpress().FormLayout(settings => {
+    settings.Name = "FormLayoutProduct";
+
+    settings.Items.Add(m => m.Id, item =>
+    {
+        item.ClientVisible = false;
+        item.HelpText = "Help text for Id";
+    });
+
+    settings.Items.AddGroupItem(groupSettings =>
+    {
+
+        groupSettings.Caption = "Supplier ve Category";
+        groupSettings.ShowCaption = DefaultBoolean.True;
+        groupSettings.GroupBoxDecoration = GroupBoxDecoration.Box;
+
+        groupSettings.ColCount = 2;
+
+        groupSettings.Items.Add(m => m.SupplierId, item =>
+        {
+
+            item.Caption = "Supplier";
+
+            item.SetNestedContent(() =>
+            {
+                ViewContext.Writer.Write(Html.Action("ComboBoxSupplierPartial", "ComboBox"));
+                ViewContext.Writer.Write(Html.HiddenFor(m => m.SupplierId).ToHtmlString());
+                ViewContext.Writer.Write(Html.ValidationMessageFor(m => m.SupplierId).ToHtmlString());
+            });
+
+            //item.NestedExtension().ComboBox(cbx =>
+            //{
+            //    cbx.Properties.DropDownStyle = DropDownStyle.DropDown;
+            //    cbx.Properties.TextField = "CompanyName";
+            //    cbx.Properties.ValueField = "Id";
+            //    cbx.Properties.ValueType = typeof(int);
+            //    cbx.Properties.DataSource = ViewBag.Supplier;
+            //    cbx.Properties.ClientSideEvents.GotFocus = "function(s,e){s.ShowDropDown();}";
+
+            //    cbx.Properties.ValidationSettings.ErrorDisplayMode = ErrorDisplayMode.ImageWithText;
+            //    cbx.Properties.ValidationSettings.Display = Display.Dynamic;
+            //});
+
+        });
+
+        groupSettings.Items.Add(m => m.CategoryId, item => {
+
+            item.Caption = "Category";
+
+            item.SetNestedContent(() =>
+            {
+                ViewContext.Writer.Write(Html.Action("ComboBoxCategoryPartial", "ComboBox"));
+                ViewContext.Writer.Write(Html.HiddenFor(m => m.CategoryId).ToHtmlString());
+                ViewContext.Writer.Write(Html.ValidationMessageFor(m => m.CategoryId).ToHtmlString());
+
+            });
+
+            //item.NestedExtension().ComboBox(cbx =>
+            //{
+            //    cbx.Properties.DropDownStyle = DropDownStyle.DropDown;
+            //    cbx.Properties.TextField = "CategoryName";
+            //    cbx.Properties.ValueField = "Id";
+            //    cbx.Properties.ValueType = typeof(int);
+            //    cbx.Properties.DataSource = ViewBag.Category;
+            //    cbx.Properties.ClientSideEvents.GotFocus = "function(s,e){s.ShowDropDown();}";
+
+            //    cbx.Properties.ValidationSettings.ErrorDisplayMode = ErrorDisplayMode.ImageWithText;
+            //    cbx.Properties.ValidationSettings.Display = Display.Dynamic;
+            //});
+        });
+    });
+
+    settings.Items.AddGroupItem(groupSettings => {
+        groupSettings.Caption = "Product Detaylari";
+        groupSettings.ShowCaption = DefaultBoolean.True;
+        groupSettings.GroupBoxDecoration = GroupBoxDecoration.Box;
+
+        groupSettings.ColCount = 2;
+
+        groupSettings.Items.Add(m => m.ProductName, item =>
+        {
+            item.ColSpan = 2;
+
+            item.NestedExtension().TextBox(tbx =>
+            {
+                tbx.Width = Unit.Percentage(100);
+                tbx.Properties.ValidationSettings.ErrorDisplayMode = ErrorDisplayMode.ImageWithText;
+                tbx.Properties.ValidationSettings.Display = Display.Dynamic;
+            });
+
+        });
+        groupSettings.Items.Add(m => m.QuantityPerUnit, item => {
+            item.NestedExtension().TextBox(tbx =>
+            {
+                tbx.Width = Unit.Percentage(100);
+            });
+
+        });
+        groupSettings.Items.Add(m => m.UnitPrice, item => {
+            item.NestedExtension().TextBox(tbx =>
+            {
+                tbx.Width = Unit.Percentage(100);
+            });
+
+        });
+        groupSettings.Items.Add(m => m.UnitsInStock, item => {
+            item.NestedExtension().TextBox(tbx =>
+            {
+                tbx.Width = Unit.Percentage(100);
+            });
+
+        });
+        groupSettings.Items.Add(m => m.UnitsOnOrder, item => {
+            item.NestedExtension().TextBox(tbx =>
+            {
+                tbx.Width = Unit.Percentage(100);
+            });
+
+        });
+        groupSettings.Items.Add(m => m.ReorderLevel, item => {
+            item.NestedExtension().TextBox(tbx =>
+            {
+                tbx.Width = Unit.Percentage(100);
+            });
+
+        });
+        groupSettings.Items.Add(m => m.Discontinued, item => {
+            item.NestedExtension().CheckBox(cbx =>
+            {
+                cbx.Width = Unit.Percentage(100);
+                cbx.Properties.ValidationSettings.ErrorDisplayMode = ErrorDisplayMode.ImageWithText;
+                cbx.Properties.ValidationSettings.Display = Display.Dynamic;
+                cbx.ShowModelErrors = true;
+            });
+        });
+
+        groupSettings.Items.AddEmptyItem();
+
+        groupSettings.Items.Add(item =>
+        {
+            item.Caption = string.Empty;
+
+            item.SetNestedContent(() =>
+            {
+                ViewContext.Writer.Write(Html.DevExpress().Button(btn =>
+                {
+                    btn.Name = "btnUpdate";
+                    btn.Text = "Update";
+                    //btn.UseSubmitBehavior = true;
+                    btn.ClientSideEvents.Click = "function(s,e){updateGridProduct(GridViewProducts);}";
+                }).GetHtml());
+
+                ViewContext.Writer.Write("<span> <span>");
+
+                ViewContext.Writer.Write(Html.DevExpress().Button(btn =>
+                {
+                    btn.Name = "btnCancel";
+                    btn.Text = "Cancel";
+                    btn.ClientSideEvents.Click = "function(s,e){cancelGridProduct(GridViewProducts);}";
+                }).GetHtml());
+
+            });
+        });
+
+    });
+
+}).GetHtml()
+
+
