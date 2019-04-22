@@ -5,10 +5,16 @@
 
 <h2>Products</h2>
 
+@Html.DevExpress().Button(btn =>
+{
+    btn.Name = "btnDemo";
+    btn.Text = "Demo";
+    btn.ClientSideEvents.Click = "function(s,e){ btnClick(s,e); }";
+}).GetHtml()
+
 <form id ="frm">
     @Html.Action("GridViewProductsPartial")
 </form>
-
 
 @section script{
     <script type="text/javascript">
@@ -19,6 +25,8 @@
         var comboBoxCategoryInit;
         var comboBoxSupplierValueChanged;
         var comboBoxCategoryValueChanged;
+        var btnClick;
+        var onProductGridBeginCallBack;
 
         // Hidden kontrollerin validationi icin gerekli
         // $(function(){}) icine koyulmamasi gerek !
@@ -76,6 +84,16 @@
                 $.validator.unobtrusive.parse(document);
                 form.executed = true;
             };
+
+            btnClick = function(s, e) {
+                GridViewProducts.UpdateEdit();
+            };
+
+            onProductGridBeginCallBack = function (s, e) {
+                console.log(e.command);
+                //e.customArgs["supplierId"] = '2';
+
+            }
 
         })
 

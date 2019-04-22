@@ -251,6 +251,8 @@
     <Content Include="Views\GridView\_GridViewTumKolonlarPartial.cshtml" />
     <Content Include="Views\Shared\_GridViewPartial.cshtml" />
     <Content Include="Views\Product\Index.cshtml" />
+    <Content Include="Views\GridView\BatchEditOrnek.cshtml" />
+    <Content Include="Views\GridView\_GridViewProductsBatchEditPartial.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

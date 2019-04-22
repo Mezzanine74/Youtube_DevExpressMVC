@@ -17,7 +17,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace YoutubeDevExpressMVC.Web.Models.Db
 {
-
     // Order
     [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.4.0")]
     public class Order : IEntity
