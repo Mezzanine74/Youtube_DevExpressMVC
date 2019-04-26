@@ -253,6 +253,8 @@
     <Content Include="Views\Product\Index.cshtml" />
     <Content Include="Views\GridView\BatchEditOrnek.cshtml" />
     <Content Include="Views\GridView\_GridViewProductsBatchEditPartial.cshtml" />
+    <Content Include="Views\GridView\GridCustomButton.cshtml" />
+    <Content Include="Views\GridView\_GridViewCustomButtonPartial.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

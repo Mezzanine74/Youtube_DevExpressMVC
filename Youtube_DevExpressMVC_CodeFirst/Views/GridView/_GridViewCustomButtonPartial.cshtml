@@ -1,0 +1,44 @@
+@{
+	var grid = Html.DevExpress().GridView(settings => {
+        settings.Name = "GridViewCustomButton";
+        settings.CallbackRouteValues = new { Controller = "GridView", Action = "GridViewCustomButtonPartial" };
+
+        settings.SettingsEditing.AddNewRowRouteValues = new { Controller = "GridView", Action = "GridViewCustomButtonPartialAddNew" };
+        settings.SettingsEditing.UpdateRowRouteValues = new { Controller = "GridView", Action = "GridViewCustomButtonPartialUpdate" };
+        settings.SettingsEditing.DeleteRowRouteValues = new { Controller = "GridView", Action = "GridViewCustomButtonPartialDelete" };
+        
+        YoutubeDevExpressMVC.Web.Helpers.GridViewCommonSettings.SetSettings(settings);
+
+        settings.CommandColumn.CustomButtons.Add(new GridViewCommandColumnCustomButton() {  ID = "btnEmail", Text = "Email" });
+        settings.CommandColumn.CustomButtons.Add(new GridViewCommandColumnCustomButton() {  ID = "btnEmail2", Text = "Email2" });
+
+        settings.CommandColumn.Width = Unit.Pixel(200);
+
+        settings.CommandColumn.CellStyle.HorizontalAlign = HorizontalAlign.Left;
+
+        settings.CustomButtonInitialize = (sender, e) =>
+        {
+            MVCxGridView g = sender as MVCxGridView;
+            var unitsInStock = (short?)g.GetRowValues(e.VisibleIndex, "UnitsInStock");
+            if (unitsInStock > 20)
+            {
+                e.Visible = DefaultBoolean.True;
+            }
+            else
+            {
+                e.Visible = DefaultBoolean.False;
+            }
+        };
+
+        settings.ClientSideEvents.CustomButtonClick = "function(s,e){ emailClicked(s,e); }";
+
+				settings.Columns.Add("Id");
+				settings.Columns.Add("ProductName");
+				settings.Columns.Add("UnitPrice");
+				settings.Columns.Add("UnitsInStock");
+			});
+		if (ViewData["EditError"] != null){
+        grid.SetEditErrorText((string)ViewData["EditError"]);
+    }
+}
+@grid.Bind(Model).GetHtml()
