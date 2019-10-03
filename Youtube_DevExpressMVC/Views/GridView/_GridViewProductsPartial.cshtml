@@ -9,37 +9,154 @@
             Controller = "GridView",
             Action = "GridViewProductsPartial" };
 
-		settings.SettingsEditing.AddNewRowRouteValues = new { Controller = "GridView", Action = "GridViewProductsPartialAddNew" };
-		settings.SettingsEditing.UpdateRowRouteValues = new { Controller = "GridView", Action = "GridViewProductsPartialUpdate" };
-		settings.SettingsEditing.DeleteRowRouteValues = new { Controller = "GridView", Action = "GridViewProductsPartialDelete" };
+        settings.SettingsEditing.AddNewRowRouteValues = new { Controller = "GridView", Action = "GridViewProductsPartialAddNew" };
+        settings.SettingsEditing.UpdateRowRouteValues = new { Controller = "GridView", Action = "GridViewProductsPartialUpdate" };
+        settings.SettingsEditing.DeleteRowRouteValues = new { Controller = "GridView", Action = "GridViewProductsPartialDelete" };
 
-		YoutubeDevExpressMVC.Web.Helpers.GridViewCommonSettings.SetSettings(settings);
+        YoutubeDevExpressMVC.Web.Helpers.GridViewCommonSettings.SetSettings(settings);
 
-				settings.Columns.Add("Id");
-				settings.Columns.Add("ProductName");
-				settings.Columns.Add("SupplierId");
-				settings.Columns.Add("CategoryId");
-				settings.Columns.Add("QuantityPerUnit");
-				settings.Columns.Add("UnitPrice");
-				settings.Columns.Add("UnitsInStock");
-				settings.Columns.Add("UnitsOnOrder");
-				settings.Columns.Add("ReorderLevel");
-				settings.Columns.Add("Discontinued");
+        settings.SettingsExport.EnableClientSideExportAPI = true;
 
-
-        settings.SetEditFormTemplateContent(editFormTemplate =>
+        // SERVER SIDE EVENTS
+        settings.DataBound = (s, e) =>
         {
-            var grd = editFormTemplate.Grid;
+            MVCxGridView gv = s as MVCxGridView;
+            gv.Visible = (gv.VisibleRowCount > 0);
+        };
 
-            Product product = grd.IsNewRowEditing ? new Product() : (Product)grd.GetRow(grd.EditingRowVisibleIndex);
+        settings.CellEditorInitialize = (sender, e) => {
 
-            Html.RenderPartial("_CustomEditProduct", product);
+            //if (e.Column.Grid.IsNewRowEditing)
+            //{
+            //    if (e.Column.FieldName == "UnitPrice")
+            //    {
+            //        e.Editor.ReadOnly = true;
+            //    }
+            //}
+
+            if (e.Column.FieldName == "UnitPrice")
+            {
+                MVCxGridView grd = (MVCxGridView)sender;
+                if ((short?) grd.GetRowValues(e.VisibleIndex, "UnitsInStock") > 15)
+                {
+                    e.Editor.Visible = false;
+                };
+            }
+
+        };
+
+        settings.HtmlRowPrepared = (s, e) =>
+        {
+            if (e.RowType != GridViewRowType.Data) return;
+
+            var unitsInStock = (short?)e.GetValue("UnitsInStock");
+            if (unitsInStock > 15)
+                e.Row.ForeColor = System.Drawing.Color.Green;
+        };
+
+        settings.BeforeGetCallbackResult = (sender, e) =>
+        {
+            var grd = (MVCxGridView)sender;
+            grd.DataBind();
+
+            grd.JSProperties.Add("cpFilterExpression", grd.FilterExpression);
+
+        };
+
+        settings.CustomSummaryCalculate = (sender, e) =>
+        {
+            decimal totalPrice = 0;
+            int startIndex = ((ASPxGridView)sender).PageIndex * ((ASPxGridView)sender).SettingsPager.PageSize;
+            int endIndex = startIndex + ((ASPxGridView)sender).SettingsPager.PageSize;
+            for (int i = startIndex; i < endIndex; i++)
+            {
+                decimal currentPrice = Convert.ToDecimal(((ASPxGridView)sender).GetRowValues(i, "UnitsOnOrder"));
+                totalPrice = totalPrice + currentPrice;
+            }
+            e.TotalValue = totalPrice;
+        };
+
+        // CLIENT API
+        settings.ClientSideEvents.BeginCallback = "function(s,e){onProductGridBeginCallBack(s,e);}";
+
+        settings.ClientSideEvents.RowDblClick = "function(s,e){ s.StartEditRow(e.visibleIndex); }";
+
+        settings.Columns.Add("Id");
+
+        settings.Columns.AddBand(anaBand =>
+        {
+            anaBand.Caption = "Proje, Supplier ve Category";
+
+            anaBand.Columns.Add("ProductName");
+
+            anaBand.Columns.AddBand(band =>
+            {
+                band.Caption = "Supplier ve Category";
+
+                band.Columns.Add("SupplierId");
+                band.Columns.Add("CategoryId");
+
+            });
         });
 
+        settings.Columns.Add(colm =>
+        {
+            colm.SetDataItemTemplateContent(content =>
+            {
+                ViewContext.Writer.Write(DataBinder.Eval(content.DataItem, "UnitsInStock"));
+                ViewContext.Writer.Write(" " + "<h1>"+ DataBinder.Eval(content.DataItem, "ProductName") + "</h1>");
 
-			});
-		if (ViewData["EditError"] != null){
-		grid.SetEditErrorText((string)ViewData["EditError"]);
-	}
+                Html.DevExpress().Button(btn =>
+                {
+                    btn.Name = "btn23" + content.VisibleIndex.ToString();
+                    btn.Text = (string)DataBinder.Eval(content.DataItem, "QuantityPerUnit");
+                }).Render();
+
+            });
+        });
+
+        settings.Columns.Add("QuantityPerUnit");
+        settings.Columns.Add("UnitPrice");
+        settings.Columns.Add("UnitsInStock");
+        settings.Columns.Add("UnitsOnOrder");
+        settings.Columns.Add("ReorderLevel");
+        settings.Columns.Add("Discontinued");
+
+        //settings.TotalSummary.Add(DevExpress.Data.SummaryItemType.Sum, "UnitsOnOrder").DisplayFormat = "{0:N}";
+
+        var ts = settings.TotalSummary.Add(DevExpress.Data.SummaryItemType.Custom, "UnitsOnOrder");
+        ts.DisplayFormat = "{0:N}";
+        //ts.ShowInColumn = "UnitsOnOrder";
+
+        settings.Settings.ShowFooter = true;
+
+        settings.SettingsExport.EnableClientSideExportAPI = false;
+
+        settings.SettingsExport.ExcelExportMode = DevExpress.Export.ExportType.WYSIWYG; // Bunu koyarsan kolon genislikleri ve formatlar tutar
+
+        settings.Toolbars.Add(t =>
+        {
+            t.EnableAdaptivity = true;
+            t.Items.Add(GridViewToolbarCommand.ExportToXls);
+            t.Items.Add(GridViewToolbarCommand.ExportToXlsx);
+        });
+
+        settings.Settings.VerticalScrollBarMode = ScrollBarMode.Visible;
+        settings.Settings.VerticalScrollableHeight = 200;
+
+        //settings.SetEditFormTemplateContent(editFormTemplate =>
+        //{
+        //    var grd = editFormTemplate.Grid;
+
+        //    Product product = grd.IsNewRowEditing ? new Product() : (Product)grd.GetRow(grd.EditingRowVisibleIndex);
+
+        //    Html.RenderPartial("_CustomEditProduct", product);
+        //});
+
+
+    });
+    if (ViewData["EditError"] != null){
+        grid.SetEditErrorText((string)ViewData["EditError"]);
+    }
 }
 @grid.Bind(Model).GetHtml()

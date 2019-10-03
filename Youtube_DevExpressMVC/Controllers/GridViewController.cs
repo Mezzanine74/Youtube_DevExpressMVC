@@ -1,8 +1,8 @@
-﻿using System;
+﻿using DevExpress.Web.Mvc;
+using System;
 using System.Linq;
 using System.Web.Mvc;
 using YoutubeDevExpressMVC.Web.Models.Db;
-
 
 namespace YoutubeDevExpressMVC.Web.Controllers
 {
@@ -14,7 +14,7 @@ namespace YoutubeDevExpressMVC.Web.Controllers
             return View();
         }
 
-        NorthwindRevEntities db = new NorthwindRevEntities();
+        NorthWindRevEntities db = new NorthWindRevEntities();
 
         [ValidateInput(false)]
         public ActionResult GridViewDemoPartial()
@@ -95,12 +95,15 @@ namespace YoutubeDevExpressMVC.Web.Controllers
         }
 
         [ValidateInput(false)]
-        public ActionResult GridViewProductsPartial()
-        {
-            ViewBag.Supplier = db.Suppliers.Select(c => new { c.Id, c.CompanyName }).ToList();
-            ViewBag.Category = db.Categories.Select(c => new { c.Id, c.CategoryName }).ToList();
+        public ActionResult GridViewProductsPartial(string supplierId)
 
-            var model = db.Products;
+        {
+            //ViewBag.Supplier = db.Suppliers.Select(c => new { c.Id, c.CompanyName }).ToList();
+            //ViewBag.Category = db.Categories.Select(c => new { c.Id, c.CategoryName }).ToList();
+
+            var supplier = Convert.ToInt16(supplierId);
+
+            var model = String.IsNullOrEmpty(supplierId) ? db.Products : db.Products.Where(c => c.SupplierId == supplier);
             return PartialView("_GridViewProductsPartial", model.ToList());
         }
 
@@ -244,6 +247,142 @@ namespace YoutubeDevExpressMVC.Web.Controllers
                 }
             }
             return PartialView("_GridViewTumKolonlarPartial", model.ToList());
+        }
+
+        public ActionResult BatchEditOrnek()
+        {
+            return View();
+        }
+
+        public ActionResult GridViewProductsBatchEditPartial()
+        {
+            return PartialView("_GridViewProductsBatchEditPartial", db.Products.ToList());
+        }
+
+        public ActionResult GridViewPartialProductsBatchUpdatePartial(MVCxGridViewBatchUpdateValues<Product, object> updateValues)
+        {
+            var model = db.Products;
+
+            foreach (var product in updateValues.Insert)
+            {
+                if (updateValues.IsValid(product))
+                {
+                    model.Add(product);
+                    db.SaveChanges();
+                }
+            }
+
+            foreach (var product in updateValues.Update)
+            {
+                if (updateValues.IsValid(product))
+                {
+                    var item = model.FirstOrDefault(c => c.Id == product.Id);
+
+                    item.SupplierId = product.SupplierId;
+                    item.CategoryId = product.CategoryId;
+                    item.Discontinued = product.Discontinued;
+                    item.ProductName = product.ProductName;
+                    item.QuantityPerUnit = product.QuantityPerUnit;
+                    item.ReorderLevel = product.ReorderLevel;
+                    item.UnitPrice = product.UnitPrice;
+                    item.UnitsInStock = product.UnitsInStock;
+                    item.UnitsOnOrder = product.UnitsOnOrder;
+
+                    db.SaveChanges();
+
+                }
+            }
+
+            foreach (var id in updateValues.DeleteKeys)
+            {
+                var item = model.FirstOrDefault(c => c.Id == Convert.ToInt32(id));
+
+                if (item != null)
+                {
+                    model.Remove(item);
+                    db.SaveChanges();
+                }
+
+            }
+
+            return PartialView("_GridViewProductsBatchEditPartial", db.Products.ToList());
+        }
+
+        public ActionResult GridCustomButton()
+        {
+            return View();
+        }
+
+        [ValidateInput(false)]
+        public ActionResult GridViewCustomButtonPartial()
+        {
+            var model = db.Products;
+            return PartialView("_GridViewCustomButtonPartial", model.ToList());
+        }
+
+        [HttpPost, ValidateInput(false)]
+        public ActionResult GridViewCustomButtonPartialAddNew(YoutubeDevExpressMVC.Web.Models.Db.Product item)
+        {
+            var model = db.Products;
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    model.Add(item);
+                    db.SaveChanges();
+                }
+                catch (Exception e)
+                {
+                    ViewData["EditError"] = e.Message;
+                }
+            }
+            else
+                ViewData["EditError"] = "Please, correct all errors.";
+            return PartialView("_GridViewCustomButtonPartial", model.ToList());
+        }
+        [HttpPost, ValidateInput(false)]
+        public ActionResult GridViewCustomButtonPartialUpdate(YoutubeDevExpressMVC.Web.Models.Db.Product item)
+        {
+            var model = db.Products;
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var modelItem = model.FirstOrDefault(it => it.Id == item.Id);
+                    if (modelItem != null)
+                    {
+                        this.UpdateModel(modelItem);
+                        db.SaveChanges();
+                    }
+                }
+                catch (Exception e)
+                {
+                    ViewData["EditError"] = e.Message;
+                }
+            }
+            else
+                ViewData["EditError"] = "Please, correct all errors.";
+            return PartialView("_GridViewCustomButtonPartial", model.ToList());
+        }
+        [HttpPost, ValidateInput(false)]
+        public ActionResult GridViewCustomButtonPartialDelete(System.Int32 Id)
+        {
+            var model = db.Products;
+            if (Id >= 0)
+            {
+                try
+                {
+                    var item = model.FirstOrDefault(it => it.Id == Id);
+                    if (item != null)
+                        model.Remove(item);
+                    db.SaveChanges();
+                }
+                catch (Exception e)
+                {
+                    ViewData["EditError"] = e.Message;
+                }
+            }
+            return PartialView("_GridViewCustomButtonPartial", model.ToList());
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using DevExpress.Web;
 using DevExpress.Web.Mvc;
+using System.Web.UI.WebControls;
 
 namespace YoutubeDevExpressMVC.Web.Helpers
 {
@@ -17,6 +18,10 @@ namespace YoutubeDevExpressMVC.Web.Helpers
             settings.CommandColumn.ShowNewButtonInHeader = true;
 
             settings.KeyFieldName = "Id";
+
+            settings.Width = Unit.Pixel(800);
+            settings.SettingsResizing.ColumnResizeMode = ColumnResizeMode.Control;
+            settings.SettingsBehavior.AllowEllipsisInText = true;
 
             settings.SettingsPager.Visible = true;
             settings.Settings.ShowGroupPanel = false;

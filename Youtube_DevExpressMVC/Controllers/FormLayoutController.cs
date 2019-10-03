@@ -6,7 +6,7 @@ namespace YoutubeDevExpressMVC.Web.Controllers
 {
     public class FormLayoutController : Controller
     {
-        NorthwindRevEntities db = new NorthwindRevEntities();
+        NorthWindRevEntities db = new NorthWindRevEntities();
 
         // GET: FormLayout
         public ActionResult Index()

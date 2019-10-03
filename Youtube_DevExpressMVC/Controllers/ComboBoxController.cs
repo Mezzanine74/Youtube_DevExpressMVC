@@ -6,7 +6,7 @@ namespace YoutubeDevExpressMVC.Web.Controllers
 {
     public class ComboBoxController : Controller
     {
-        NorthwindRevEntities db = new NorthwindRevEntities();
+        NorthWindRevEntities db = new NorthWindRevEntities();
 
         // GET: ComboBox
         public ActionResult Index()

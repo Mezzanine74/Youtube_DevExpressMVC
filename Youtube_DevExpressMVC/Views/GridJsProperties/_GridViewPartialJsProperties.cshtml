@@ -1,0 +1,51 @@
+@functions{
+    protected void ExpandAll(MVCxGridView gridView)
+    {
+        gridView.ExpandAll();
+    }
+}
+
+@{
+    var grid = Html.DevExpress().GridView(settings =>
+    {
+        settings.Name = "GridViewJsProperties";
+        settings.CallbackRouteValues = new { Controller = "GridJsProperties", Action = "GridViewPartialJsProperties" };
+
+        settings.SettingsEditing.AddNewRowRouteValues = new { Controller = "GridJsProperties", Action = "GridViewPartialJsPropertiesAddNew" };
+        settings.SettingsEditing.UpdateRowRouteValues = new { Controller = "GridJsProperties", Action = "GridViewPartialJsPropertiesUpdate" };
+        settings.SettingsEditing.DeleteRowRouteValues = new { Controller = "GridJsProperties", Action = "GridViewPartialJsPropertiesDelete" };
+
+        YoutubeDevExpressMVC.Web.Helpers.GridViewCommonSettings.SetSettings(settings);
+
+        settings.ClientSideEvents.EndCallback = "function(s,e) {endCallBack(s,e);}";
+
+        settings.CustomJSProperties = (s, e) =>
+        {
+            e.Properties["cpServerMesaj"] = ViewData["benServerdanGeliyorum"];
+        };
+
+        settings.PreRender = (sender, e) =>
+        {
+            MVCxGridView gridView = (MVCxGridView)sender;
+            ExpandAll(gridView);
+        };
+
+        settings.BeforeGetCallbackResult = (sender, e) =>
+        {
+            MVCxGridView gridView = (MVCxGridView)sender;
+            ExpandAll(gridView);
+        };
+
+        settings.Columns.Add("Id");
+
+        settings.Columns.Add("Category.CategoryName").GroupIndex = 0;
+        settings.Columns.Add("Supplier.CompanyName").GroupIndex = 1;
+
+        settings.Columns.Add("ProductName");
+    });
+    if (ViewData["EditError"] != null)
+    {
+        grid.SetEditErrorText((string)ViewData["EditError"]);
+    }
+}
+@grid.Bind(Model).GetHtml()

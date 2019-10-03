@@ -1,0 +1,27 @@
+﻿
+@{
+    ViewBag.Title = "BatchEditOrnek";
+}
+
+<h2>BatchEditOrnek</h2>
+
+@Html.Action("GridViewPartialProductsBatchUpdatePartial")
+
+@section script{
+    <script type="text/javascript">
+        var onBatchEditEndEditing;
+
+        $(function() {
+            onBatchEditEndEditing = function (s, e) {
+
+                setTimeout(
+                    function() {
+                        if (GridViewProducts.batchEditApi.HasChanges()) {
+                            GridViewProducts.UpdateEdit();
+                        }
+                    }
+                    , 1);
+            }
+        })
+    </script>
+}
