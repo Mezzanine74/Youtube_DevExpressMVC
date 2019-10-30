@@ -1,0 +1,46 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Randevu</h2>
+
+
+@Html.Action("SchedulerRandevuPartial")
+
+@section script{
+    <script type="text/javascript">
+
+        var submitCustomForm, deleteAppointment, beginCallBackScheduler;
+
+        $(function() {
+
+            submitCustomForm = function(s,e)
+            {
+                SchedulerRandevu.AppointmentFormSave();
+            }
+
+            deleteAppointment = function (s, e) {
+                if (confirm('silinsin mi')) {
+                    SchedulerRandevu.AppointmentFormDelete()
+                }
+            }
+
+            beginCallBackScheduler = function(s, e) {
+                console.log(e);
+
+                if (e.command === 'DELETE_APPOINTMENTS') {
+
+                    if (confirm('Randevuyu silmek istiyor musunuz?')) {
+                        e.customArgs['confirmDelete'] = true;
+                    }
+
+                }
+
+            }
+
+        })
+
+    </script>    
+}
+

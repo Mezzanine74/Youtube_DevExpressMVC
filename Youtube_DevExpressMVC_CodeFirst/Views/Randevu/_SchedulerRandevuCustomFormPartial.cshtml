@@ -1,0 +1,185 @@
+﻿@model YoutubeDevExpressMVC.Web.Models.DbRandevu.Randevu
+
+@Html.DevExpress().FormLayout(settings =>
+{
+    settings.Name = "SchedulerRandevuCustomForm";
+    settings.Width = Unit.Percentage(100);
+    settings.ColCount = 2;
+
+    // Subject
+    settings.Items.Add(m => m.Subject, item =>
+    {
+        item.ColSpan = 2;
+        item.NestedExtension().TextBox(tb =>
+        {
+            tb.Name = "Subject";
+            tb.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+            tb.ShowModelErrors = true;
+            tb.Properties.ValidationSettings.ErrorDisplayMode = ErrorDisplayMode.ImageWithText;
+            tb.Properties.ValidationSettings.Display = Display.Dynamic;
+
+        });
+    });
+
+    // Location
+    settings.Items.Add(m => m.Location, item =>
+    {
+        item.ColSpan = 2;
+        item.NestedExtension().TextBox(tb =>
+        {
+            tb.Name = "Location";
+            tb.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+            tb.ShowModelErrors = true;
+            tb.Properties.ValidationSettings.ErrorDisplayMode = ErrorDisplayMode.ImageWithText;
+            tb.Properties.ValidationSettings.Display = Display.Dynamic;
+
+        });
+    });
+
+    // Start
+    settings.Items.Add(m => m.StartDate, item =>
+    {
+        item.Caption = "Start Date";
+        item.NestedExtension().DateEdit(de =>
+        {
+            de.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+            de.Properties.UseMaskBehavior = true;
+            de.Properties.EditFormat = EditFormat.Custom;
+            de.Properties.EditFormatString = "dd/MM/yyyy HH:mm";
+            de.Properties.TimeSectionProperties.Visible = true;
+            de.Properties.TimeSectionProperties.Adaptive = true;
+            de.ShowModelErrors = true;
+            de.Properties.ValidationSettings.ErrorDisplayMode = ErrorDisplayMode.ImageWithText;
+            de.Properties.ValidationSettings.Display = Display.Dynamic;
+
+
+        });
+    }).Name = "StartDate";
+
+    // Label
+    settings.Items.Add(m => m.Label, item =>
+    {
+        item.Caption = "Label";
+        item.NestedExtension().ComboBox(cb =>
+        {
+            cb.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+            cb.Properties.TextField = "Text";
+            cb.Properties.ValueField = "Value";
+            cb.Properties.ValueType = typeof(Int32);
+            cb.Properties.DataSource = ViewBag.LabelDataSource;
+        });
+
+    });
+
+    // End time
+    settings.Items.Add(m => m.EndDate, item =>
+    {
+        item.Caption = "End Date";
+        item.NestedExtension().DateEdit(de =>
+        {
+            de.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+            de.Properties.UseMaskBehavior = true;
+            de.Properties.EditFormat = EditFormat.Custom;
+            de.Properties.EditFormatString = "dd/MM/yyyy HH:mm";
+            de.Properties.TimeSectionProperties.Visible = true;
+            de.Properties.TimeSectionProperties.Adaptive = true;
+            de.ShowModelErrors = true;
+            de.Properties.ValidationSettings.ErrorDisplayMode = ErrorDisplayMode.ImageWithText;
+            de.Properties.ValidationSettings.Display = Display.Dynamic;
+
+        });
+    });
+
+    settings.Items.Add(m => m.HastaId, item =>
+    {
+        item.Caption = "Hasta";
+        item.NestedExtension().TextBox(tb =>
+        {
+            tb.Name = "HastaId";
+            tb.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+            tb.ShowModelErrors = true;
+            tb.Properties.ValidationSettings.ErrorDisplayMode = ErrorDisplayMode.ImageWithText;
+            tb.Properties.ValidationSettings.Display = Display.Dynamic;
+        });
+
+    });
+
+    // Status
+    settings.Items.Add(m => m.Status, item =>
+    {
+        item.Caption = "Status";
+        item.Visible = false;
+        item.NestedExtension().ComboBox(cb =>
+        {
+            cb.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+            cb.Properties.TextField = "Text";
+            cb.Properties.ValueField = "Value";
+            cb.Properties.ValueType = typeof(Int32);
+            cb.Properties.DataSource = ViewBag.StatusDataSource;
+        });
+
+    });
+
+    // Descriptpin
+    settings.Items.Add(m => m.Description, item =>
+    {
+        item.ColSpan = 2;
+        item.NestedExtension().Memo(mm =>
+        {
+            mm.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+            mm.Name = "Description";
+            mm.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+            mm.Height = System.Web.UI.WebControls.Unit.Pixel(80);
+            mm.ShowModelErrors = true;
+            mm.Properties.ValidationSettings.ErrorDisplayMode = ErrorDisplayMode.ImageWithText;
+            mm.Properties.ValidationSettings.Display = Display.Dynamic;
+        });
+    });
+
+    settings.Items.Add(item =>
+    {
+        item.ShowCaption = DefaultBoolean.False;
+        item.NestedExtension().Button(btn =>
+        {
+            btn.Name = "SilSchedule";
+            btn.UseSubmitBehavior = false;
+            btn.Text = "Randevuyu Sil";
+            btn.Width = System.Web.UI.WebControls.Unit.Percentage(80);
+            btn.ControlStyle.CssClass = "silButton";
+            btn.ClientSideEvents.Click = "function(s, e) {deleteAppointment(s, e )}";
+        });
+    });
+
+    settings.Items.Add(item =>
+    {
+        item.ShowCaption = DefaultBoolean.False;
+        item.NestedExtension().Button(btn =>
+        {
+            //btn.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+            btn.Name = "SubmitSchedule";
+            btn.UseSubmitBehavior = false;
+            btn.Text = "Kaydet";
+            btn.Width = System.Web.UI.WebControls.Unit.Percentage(80);
+            btn.ClientSideEvents.Click = "function(s,e){submitCustomForm(s,e);}";
+        });
+    });
+
+    settings.Items.Add(i =>
+    {
+        i.ColSpan = 2;
+        i.ShowCaption = DefaultBoolean.False;
+    }).SetNestedContent(() =>
+    {
+        // Hata bilgisi Onay formu icin
+        Html.DevExpress().SchedulerStatusInfo(siSettings =>
+        {
+            siSettings.Name = "schedulerStatusInfo";
+            siSettings.Priority = 1;
+            siSettings.SchedulerName = "SchedulerRandevuOnay";
+        }).Render();
+
+    });
+
+
+}).GetHtml()
+

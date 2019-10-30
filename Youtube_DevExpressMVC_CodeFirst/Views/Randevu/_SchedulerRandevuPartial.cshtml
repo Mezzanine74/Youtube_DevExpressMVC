@@ -1,0 +1,56 @@
+@using YoutubeDevExpressMVC.Web.Controllers;
+
+@{
+    var scheduler = Html.DevExpress().Scheduler(settings => {
+        settings.Name = "SchedulerRandevu";
+        settings.CallbackRouteValues = new { Controller = "Randevu", Action = "SchedulerRandevuPartial" };
+        settings.EditAppointmentRouteValues = new { Controller = "Randevu", Action = "SchedulerRandevuPartialEditAppointment" };
+
+        settings.Storage.EnableReminders = false;
+        settings.Storage.Appointments.Assign(RandevuControllerSchedulerRandevuSettings.AppointmentStorage);
+        settings.Storage.Resources.Assign(RandevuControllerSchedulerRandevuSettings.ResourceStorage);
+
+        settings.ClientSideEvents.BeginCallback = "function(s,e){ beginCallBackScheduler(s,e)}";
+
+        // Custom Form calismasi icin gereklidir. settings.OptionsForms.SetAppointmentFormTemplateContent ile beraber calisir
+        settings.AppointmentFormShowing = (sender, e) =>
+        {
+            var sch = sender as MVCxScheduler;
+            if (sch != null)
+                e.Container = new RandevuControllerSchedulerRandevuSettings.CustomAppointmentTemplateContainer(sch);
+        };
+
+        settings.OptionsForms.SetAppointmentFormTemplateContent(sch =>
+        {
+            var container = (RandevuControllerSchedulerRandevuSettings.CustomAppointmentTemplateContainer)sch;
+
+            YoutubeDevExpressMVC.Web.Models.DbRandevu.Randevu randevuAppointment = new YoutubeDevExpressMVC.Web.Models.DbRandevu.Randevu()
+            {
+                Id = container.Appointment.Id == null ? -1 : (int)container.Appointment.Id,
+                Subject = container.Appointment.Subject,
+                Location = container.Appointment.Location,
+                StartDate = container.Appointment.Start,
+                EndDate = container.Appointment.End,
+                AllDay = container.Appointment.AllDay,
+                Description = container.Appointment.Description,
+                Type = (int)container.Appointment.Type,
+                Status = (int?)container.Appointment.StatusKey,
+                Label = (int?)container.Appointment.LabelKey,
+                HastaId = container.HastaId
+            };
+
+            ViewBag.StatusDataSource = container.StatusDataSource;
+            ViewBag.LabelDataSource = container.LabelDataSource;
+
+            Html.RenderPartial("_SchedulerRandevuCustomFormPartial", randevuAppointment);
+        });
+
+
+
+
+    });
+    if (ViewData["SchedulerErrorText"] != null) {
+        scheduler.SetErrorText((string)ViewData["SchedulerErrorText"]);
+    }
+}
+@scheduler.Bind(ViewData["Appointments"], ViewData["Resources"]).GetHtml()

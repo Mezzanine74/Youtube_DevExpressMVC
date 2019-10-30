@@ -1,0 +1,13 @@
+@Html.DevExpress().ComboBox(settings => {
+        settings.Name = "ComboBoxSupplier";
+        settings.Properties.IncrementalFilteringMode = IncrementalFilteringMode.StartsWith;
+        settings.Properties.DropDownStyle = DropDownStyle.DropDown;
+        settings.Properties.ClearButton.DisplayMode = ClearButtonDisplayMode.OnHover;
+        settings.CallbackRouteValues = new { Controller = "PopUp", Action = "ComboBoxSupplierPartial" };
+        settings.Properties.CallbackPageSize = 50;
+        settings.Properties.ValueField = "Id";
+        settings.Properties.TextField = "CompanyName";
+
+        settings.Properties.ClientSideEvents.ValueChanged = "function(s,e){valueChangedCombo(s,e)}";
+
+}).BindList(Model).GetHtml()

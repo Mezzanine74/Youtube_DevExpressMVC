@@ -58,6 +58,9 @@
         {
             var grd = (MVCxGridView)sender;
             grd.DataBind();
+
+            grd.JSProperties.Add("cpFilterExpression", grd.FilterExpression);
+
         };
 
         settings.CustomSummaryCalculate = (sender, e) =>
@@ -127,7 +130,19 @@
 
         settings.Settings.ShowFooter = true;
 
+        settings.SettingsExport.EnableClientSideExportAPI = false;
 
+        settings.SettingsExport.ExcelExportMode = DevExpress.Export.ExportType.WYSIWYG; // Bunu koyarsan kolon genislikleri ve formatlar tutar
+
+        settings.Toolbars.Add(t =>
+        {
+            t.EnableAdaptivity = true;
+            t.Items.Add(GridViewToolbarCommand.ExportToXls);
+            t.Items.Add(GridViewToolbarCommand.ExportToXlsx);
+        });
+
+        settings.Settings.VerticalScrollBarMode = ScrollBarMode.Visible;
+        settings.Settings.VerticalScrollableHeight = 200;
 
         //settings.SetEditFormTemplateContent(editFormTemplate =>
         //{
