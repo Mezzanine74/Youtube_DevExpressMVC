@@ -1,0 +1,57 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Logo Upload</h2>
+
+
+@using (Html.BeginForm("BurayaGonder", "LogoUpload", FormMethod.Post))
+{
+    @Html.DevExpress().UploadControl(settings =>
+    {
+        settings.Name = "UploadControlLogo";
+        settings.CallbackRouteValues = new { Controller = "LogoUpload", Action = "UploadControlLogoUpload" };
+
+        settings.ShowUploadButton = true;
+        settings.ShowProgressPanel = true;
+        settings.AutoStartUpload = true;
+
+        settings.ValidationSettings.Assign(YoutubeDevExpressMVC.Web.Controllers.LogoUploadControllerUploadControlLogoSettings.UploadValidationSettings);
+
+        settings.ClientSideEvents.FileUploadComplete = "function(s,e){onFileUploadComplete(s,e)}";
+
+
+    }).GetHtml()
+
+    <br />
+    @Html.DevExpress().TextBox(tbx =>
+    {
+        tbx.Name = "tbxLogoUrl";
+    }).GetHtml()
+
+    <br />
+    @Html.DevExpress().Button(btn =>
+    {
+        btn.Name = "btn";
+        btn.UseSubmitBehavior = true;
+    }).GetHtml()
+
+}
+
+@section script{
+    <script type="text/javascript">
+        var onFileUploadComplete;
+
+        $(function () {
+            onFileUploadComplete = function (s, e) {
+                console.log(e);
+                tbxLogoUrl.SetValue(e.callbackData);
+            }
+        })
+    </script>
+}
+
+
+
+
