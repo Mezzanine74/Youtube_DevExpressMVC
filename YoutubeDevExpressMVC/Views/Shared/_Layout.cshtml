@@ -9,13 +9,13 @@
         @string.Join(" - ", @pageTitleParts.Where(s => !string.IsNullOrEmpty(s)))
     </title>
     <meta name="viewport" content="width=device-width, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0" />
-        @Html.DevExpress().GetStyleSheets(
-        new StyleSheet { ExtensionSuite = ExtensionSuite.NavigationAndLayout },
-        new StyleSheet { ExtensionSuite = ExtensionSuite.Editors },
-        new StyleSheet { ExtensionSuite = ExtensionSuite.Scheduler },
-        new StyleSheet { ExtensionSuite = ExtensionSuite.GridView }
-    )
-    @Html.DevExpress().GetScripts( 
+    @Html.DevExpress().GetStyleSheets(
+    new StyleSheet { ExtensionSuite = ExtensionSuite.NavigationAndLayout },
+    new StyleSheet { ExtensionSuite = ExtensionSuite.Editors },
+    new StyleSheet { ExtensionSuite = ExtensionSuite.Scheduler },
+    new StyleSheet { ExtensionSuite = ExtensionSuite.GridView }
+)
+    @Html.DevExpress().GetScripts(
         new Script { ExtensionSuite = ExtensionSuite.NavigationAndLayout },
         new Script { ExtensionSuite = ExtensionSuite.Editors },
         new Script { ExtensionSuite = ExtensionSuite.Scheduler },
@@ -26,12 +26,17 @@
     @RenderSection("Head", false)
     <script type="text/javascript" src="@Url.Content("~/Content/Script.js")"></script>
 
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/16.2.15/css/dx.common.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/16.2.15/css/dx.light.css" />
+    <!-- A DevExtreme library -->
+    <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/16.2.15/js/dx.all.js"></script>
+
     <script>
         // sending the __RequestVerificationToken value manually, see details: https://github.com/DevExpress/aspnet-security-bestpractices/tree/master/SecurityBestPractices.Mvc#4-preventing-cross-site-request-forgery-csrf
-        if(window.jQuery) {
-            $.ajaxPrefilter(function(options, originalOptions, xhr) {
+        if (window.jQuery) {
+            $.ajaxPrefilter(function (options, originalOptions, xhr) {
                 var tokenValue = $('input:hidden[name="__RequestVerificationToken"]').val();
-                if(tokenValue && options && options.data && options.data.indexOf('RequestVerificationToken') === -1)
+                if (tokenValue && options && options.data && options.data.indexOf('RequestVerificationToken') === -1)
                     options.data += "&__RequestVerificationToken=" + tokenValue;
             });
         }

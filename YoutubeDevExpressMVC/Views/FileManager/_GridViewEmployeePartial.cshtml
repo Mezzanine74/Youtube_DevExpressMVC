@@ -1,0 +1,64 @@
+@{
+	var grid = Html.DevExpress().GridView(settings => {
+        settings.Name = "GridViewEmployee";
+        settings.CallbackRouteValues = new { Controller = "FileManager", Action = "GridViewEmployeePartial" };
+
+		settings.KeyFieldName = "Id";
+
+		settings.SettingsPager.Visible = false;
+		settings.Settings.ShowGroupPanel = false;
+		settings.Settings.ShowFilterRow = false;
+		settings.SettingsBehavior.AllowSelectByRowClick = false;
+
+		settings.SettingsAdaptivity.AdaptivityMode = GridViewAdaptivityMode.Off;
+		settings.SettingsAdaptivity.AdaptiveColumnPosition = GridViewAdaptiveColumnPosition.Right;
+		settings.SettingsAdaptivity.AdaptiveDetailColumnCount = 1;
+		settings.SettingsAdaptivity.AllowOnlyOneAdaptiveDetailExpanded = false;
+		settings.SettingsAdaptivity.HideDataCellsAtWindowInnerWidth = 0;
+
+		settings.Columns.Add("Id");
+		settings.Columns.Add("LastName");
+		settings.Columns.Add("FirstName");
+
+        settings.Columns.Add(col =>
+        {
+            col.SetDataItemTemplateContent(c =>
+            {
+                Html.DevExpress().Button(b =>
+                {
+                    var visibleIndex = c.VisibleIndex;
+
+                    b.Name = "Button" + c.VisibleIndex;
+                    b.Text = "Dosyalar";
+                    b.Images.Image.IconID = "iconbuilder_actions_check_svg_32x32";
+                    b.ImagePosition = ImagePosition.Right;
+                    b.ClientSideEvents.Click = "function(s, e) {dosyalarClick(" + c.VisibleIndex + ","+c.KeyValue.ToString()+");}";
+                }).GetHtml();
+            });
+        });
+
+        settings.Columns.Add(column =>
+        {
+            column.SetDataItemTemplateContent(c =>
+            {
+                @Html.DevExpress().RadioButtonList(radioSettings =>
+                {
+                    radioSettings.Name = "RadioButtonList" + c.KeyValue;
+                    List<string> list = new List<string>();
+                    foreach (var file in (IEnumerable<YoutubeDevExpressMVC.Web.Models.DbGenel.EmployeeFile>)ViewBag.Dosyalar)
+                    {
+                        if (file.EmployeeId == (int)c.KeyValue)
+                        {
+                            list.Add(file.FileUrl);
+                        }
+                    }
+                    radioSettings.Properties.Items.AddRange(list);
+                }).GetHtml();
+            });
+        });
+
+
+
+    });
+}
+@grid.Bind(Model).GetHtml()

@@ -1,0 +1,106 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>File Manager</h2>
+
+
+@*-- grid yapicaz
+    -- icinde bi kolon olucak
+    -- kolondaki buttona basina POPUP cikacak
+    -- popup icinde FILE MANAGER olacak*@
+
+
+@*@using (Html.BeginForm())
+    {
+        @Html.Action("FileManagerPartial")
+    }*@
+
+
+@Html.Action("GridViewEmployeePartial")
+
+<form>
+    @Html.DevExpress().PopupControl(
+        settings =>
+        {
+            settings.Name = "PopupAddFileManager";
+
+            settings.CallbackRouteValues = new { Controller = "FileManager", Action = "FileManagerPartial" };
+            settings.PopupHorizontalAlign = PopupHorizontalAlign.WindowCenter;
+            settings.PopupVerticalAlign = PopupVerticalAlign.WindowCenter;
+            settings.Width = Unit.Pixel(800);
+            settings.HeaderText = "Personel Dosyalari";
+            settings.Modal = true;
+
+            settings.ClientSideEvents.EndCallback = "function (s,e) { s.Show();}";
+
+        }).GetHtml()
+</form>
+
+@section script{
+    <script type="text/javascript">
+        'use strict'
+
+        var dosyalarClick, OnFileUploaded, OnItemDeleted;
+        var rootFolder, id;
+
+        $(function () {
+
+            DevExpress.ui.dxOverlay.baseZIndex(20000);
+
+            dosyalarClick = function (index, key) {
+
+                console.log('index', index,'key', key)
+
+                id = key;
+
+                GridViewEmployee.GetRowValues(
+                index,
+                'FirstName;LastName',
+                function (value)
+                {
+                    console.log(value);
+                    rootFolder = '~/Content/EmployeeFiles/' + value[1] + '_' + value[0];
+                    PopupAddFileManager.PerformCallback({ rootFolder: rootFolder });
+
+                });
+            }
+
+            OnFileUploaded = function (s, e) {
+                console.log(e);
+                var url = rootFolder + "/" + e.fileName;
+
+                $.post('@Url.Action("EmployeeFilesUpload", "FileManager")', { path: url, id: id})
+                    .done(function (data) {
+                        if (data) {
+                            if (data.data === true) {
+                            var res = DevExpress.ui.dialog.alert(e.fileName + " eklendi", 'Eklenti', true);
+                                res.done(function() {
+                                    GridViewEmployee.PerformCallback();
+                                })
+                            }
+                        }
+                    })
+            }
+
+            OnItemDeleted = function (s, e) {
+                console.log(e);
+                var url = rootFolder + "/" + e.name;
+
+                $.post('@Url.Action("EmployeeFilesRemove", "FileManager")', { path: url, id: id})
+                    .done(function (data) {
+                        if (data) {
+                            if (data.data === true) {
+                            var res = DevExpress.ui.dialog.alert(e.name + " silindi", 'Silinti', true);
+                                res.done(function() {
+                                    GridViewEmployee.PerformCallback();
+                                })
+                            }
+                        }
+                    })
+            }
+        })
+
+    </script>
+}
