@@ -1,0 +1,77 @@
+﻿@model YoutubeDevExpressMVC.Web.Helpers.CustomerTabs.CustomerTabsData
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Tabs</h2>
+
+@Html.DevExpress().TabControl(
+        settings =>
+        {
+            settings.Name = "tabCustomers";
+            settings.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+            settings.EnableTabScrolling = true; // genisligin devreye girmesini  saglar
+            settings.TabAlign = TabAlign.Justify; // sag ve solda ok cikarir
+            settings.ClientSideEvents.TabClick = "function(s,e){ onTabFirmalarClick(s,e); }";
+        }).Bind(Model).GetHtml()
+
+@Html.Action("GridViewOrderPartial")
+
+@section script{
+    <script type="text/javascript">
+        'use strict'
+
+        var onTabFirmalarClick;
+
+        $(function () {
+
+            onTabFirmalarClick = function (s, e) {
+                var companyName = e.tab.GetText();
+
+                $.ajax({
+                    url: '/Tabs/GetByCustomer/',
+                    dataType: 'json', //json data type
+                    data: { companyName: companyName },
+                    success: function (data) {
+                        console.log(data);
+                        if (data) {
+                            if (history.pushState) {
+                                var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?customerId=' + data.id;
+                                window.history.pushState({ path: newurl }, '', newurl);
+                            }
+
+                            GridViewOrder.PerformCallback({ customerId: data.id === undefined ? 0 : data.id });
+
+                        };
+                    }
+                });
+            }
+
+            var customerId = @Request.QueryString["customerId"];
+
+                $.ajax({
+                    url: '/Tabs/GetById/',
+                    dataType: 'json', //json data type
+                    data: { customerId: customerId },
+                    success: function (data) {
+                        console.log(data);
+
+                        var index = Math.round(findObjectIndexByKey(tabCustomers.GetTabsElements(), 'innerText', data.companyName) / 2);
+                        tabCustomers.SetActiveTabIndex(index);
+                    }
+                });
+
+            function findObjectIndexByKey(array, key, value) {
+                for (var i = 0; i < array.length; i++) {
+                    if (array[i][key] === value) {
+                        return i;
+                    }
+                }
+                return null;
+            };
+        })
+
+    </script>
+}
+

@@ -1,0 +1,28 @@
+﻿@{
+    var grid = Html.DevExpress().GridView(settings =>
+    {
+        settings.Name = "GridViewOrder";
+        settings.CallbackRouteValues = new { Controller = "Tabs", Action = "GridViewOrderPartial" };
+
+
+        settings.KeyFieldName = "Id";
+
+        settings.SettingsPager.Visible = false;
+        settings.Settings.ShowGroupPanel = false;
+        settings.Settings.ShowFilterRow = false;
+        settings.SettingsBehavior.AllowSelectByRowClick = false;
+
+        settings.SettingsAdaptivity.AdaptivityMode = GridViewAdaptivityMode.Off;
+        settings.SettingsAdaptivity.AdaptiveColumnPosition = GridViewAdaptiveColumnPosition.Right;
+        settings.SettingsAdaptivity.AdaptiveDetailColumnCount = 1;
+        settings.SettingsAdaptivity.AllowOnlyOneAdaptiveDetailExpanded = false;
+        settings.SettingsAdaptivity.HideDataCellsAtWindowInnerWidth = 0;
+
+        settings.Columns.Add("CustomerId");
+        settings.Columns.Add("CustomerCode");
+        settings.Columns.Add("OrderDate");
+        settings.Columns.Add("RequiredDate");
+        settings.Columns.Add("ShippedDate");
+    });
+}
+@grid.Bind(Model).GetHtml()

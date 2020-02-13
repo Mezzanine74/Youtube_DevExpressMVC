@@ -8,7 +8,7 @@
         <EntityTypeShape EntityType="NorthwindRevModel1.Employee" Width="1.5" PointX="0.75" PointY="1" IsExpanded="true" />
         <EntityTypeShape EntityType="NorthwindRevModel1.EmployeeFile" Width="1.5" PointX="3" PointY="2.5" IsExpanded="true" />
         <AssociationConnector Association="NorthwindRevModel1.FK_EmployeeFiles_Employee" ManuallyRouted="false" />
-      </Diagram>
+        </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>
